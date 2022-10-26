@@ -20,7 +20,7 @@ namespace NewsletterSubscription
 
         }
 
-        public void Verify(string emailAddress, Guid verificationCode)
+        public void Verify(string emailAddress, string verificationCode)
         {
 
         }

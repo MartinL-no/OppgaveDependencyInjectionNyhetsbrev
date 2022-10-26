@@ -22,7 +22,7 @@ while (true)
         var emailAddress = Console.ReadLine();
         Console.Write("Skriv inn verifikasjonskode: ");
         var code = Console.ReadLine();
-        subscriptionService.Verify(emailAddress, new Guid(code));
+        subscriptionService.Verify(emailAddress, code);
     }
 }
 
