@@ -18,16 +18,45 @@ namespace NewsletterSubscription
 
         public void Subscribe(string emailAddress)
         {
-            var name = emailAddress.Split('@')[0];
-            var nameUpperCaseFirstLetter = char.ToUpper(name[0]) + name.Substring(1);
-            var subscription = new Subscription(nameUpperCaseFirstLetter, emailAddress, "1894");
-            _subscriptionRepository.Save(subscription);
+            var previousSubscription = _subscriptionRepository.Load(emailAddress);
 
+            if (previousSubscription != null)
+            {
+                SendAlreadySubscribed(previousSubscription);
+            }
+            else
+            {
+                var name = emailAddress.Split('@')[0];
+                var nameUpperCaseFirstLetter = char.ToUpper(name[0]) + name.Substring(1);
+
+                var verificationCode = GetVerificationCode();
+                var subscription = new Subscription(nameUpperCaseFirstLetter, emailAddress, verificationCode);
+                _subscriptionRepository.Save(subscription);
+
+                var email = new Email(
+                    subscription.Email,
+                    "info@getacademy.no",
+                    "Get Academy Verification Code",
+                    $"Hei {subscription.Name} your verification code is {subscription.VerificationCode}");
+
+                _emailService.Send(email);
+            }
+        }
+        private string GetVerificationCode()
+        {
+            int _min = 1000;
+            int _max = 9999;
+            Random _rdm = new Random();
+
+            return _rdm.Next(_min, _max).ToString();
+        }
+        private void SendAlreadySubscribed(Subscription subscription)
+        {
             var email = new Email(
                 subscription.Email,
                 "info@getacademy.no",
-                "Get Academy Verification Code",
-                $"Hei {subscription.Name} your verification code is {subscription.VerificationCode}");
+                "Your already subscribed!",
+                $"Hei {subscription.Name} you are already subscribed to our newsletter");
 
             _emailService.Send(email);
         }
@@ -44,7 +73,7 @@ namespace NewsletterSubscription
                     subscription.Email,
                     "info@getacademy.no",
                     "Get Academy Subscription",
-                    $"Hei {subscription.Name} your subscription to Get Academy has started");
+                    $"Hei {subscription.Name} your subscription to the Get Academy newsletter has started");
                 _emailService.Send(email);
             }
         }

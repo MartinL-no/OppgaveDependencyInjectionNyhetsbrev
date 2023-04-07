@@ -12,12 +12,18 @@ namespace NewsletterSubscription.Implementations
             var filename = subscription.Email + ".json";
             File.WriteAllText(filename, json);
         }
-
         public Subscription Load(string email)
         {
-            var filename = email + ".json";
-            var json = File.ReadAllText(filename);
-            return JsonSerializer.Deserialize<Subscription>(json);
+            try
+            {
+                var filename = email + ".json";
+                var json = File.ReadAllText(filename);
+                return JsonSerializer.Deserialize<Subscription>(json);
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
         }
     }
 }
