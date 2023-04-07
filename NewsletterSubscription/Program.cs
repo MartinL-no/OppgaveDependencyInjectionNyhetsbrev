@@ -26,7 +26,6 @@ while (true)
     }
 }
 
-
 // Demo code:
 
 var email = new Email(
